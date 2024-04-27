@@ -48,7 +48,7 @@ public class main {
         customerRepository.deleteById(id);
     }
 
-    @DeleteMapping("{customerid}")
+    @PutMapping("{customerid}")
     public void updatecustomer(@PathVariable("customerid") Integer id,@RequestBody UpdateRequest request){
         Customer customer =new Customer();
         customer.setName(request.name);
