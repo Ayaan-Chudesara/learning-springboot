@@ -1,10 +1,9 @@
 package com.ayaan;
 
+import com.sun.tools.javac.Main;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -12,31 +11,52 @@ import java.util.List;
 @RestController
 @RequestMapping("api/v1/customers")
 public class main {
-    public static void main(String[] args) {
-        SpringApplication.run(main.class, args);
+
+
+    private final CustomerRepository customerRepository;
+
+    public main(CustomerRepository customerRepository) {
+        this.customerRepository = customerRepository;
     }
 
-    @GetMapping("/greet")
-    public GreetResponse greet() {
-        GreetResponse response;
-        response = new GreetResponse(
-                "Hello",
-                List.of("Java", "c++"),
-                new Person("Alex",20)
-        );
-        return response;
-    }
 
-    record Person(String name,int age) {
-    }
-
-    record GreetResponse(String greet,
-                         List<String> favLang,
-                         Person person) {
-    }
+   public static void main(String[] args) {
+      SpringApplication.run(main.class, args);
+  }
 
     @GetMapping
     public List<Customer> getCustomers() {
-        return List.of();
+        return customerRepository.findAll();
     }
+
+    record NewcustomerRequest(String name, String email, int age) {}
+
+    record UpdateRequest(String name, String email, int age) {}
+
+    @PostMapping
+    public void addcustomer(@RequestBody NewcustomerRequest request){
+        Customer customer =new Customer();
+        customer.setName(request.name);
+        customer.setEmail(request.email);
+        customer.setAge(request.age);
+
+        customerRepository.save(customer);
+    }
+
+    @DeleteMapping("{customerid}")
+    public void deletecustomer(@PathVariable("customerid") Integer id){
+        customerRepository.deleteById(id);
+    }
+
+    @DeleteMapping("{customerid}")
+    public void updatecustomer(@PathVariable("customerid") Integer id,@RequestBody UpdateRequest request){
+        Customer customer =new Customer();
+        customer.setName(request.name);
+        customer.setEmail(request.email);
+        customer.setAge(request.age);
+
+        customerRepository.save(customer);
+    }
+
+
 }
